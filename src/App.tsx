@@ -148,7 +148,7 @@ const App: React.FC = () => {
     <div className="flex flex-col min-h-screen items-center p-8 bg-gradient-to-b from-gray-900 via-gray-800 to-slate-900 text-white font-poppins space-y-10">
   {/* Header Section */}
   <header className="w-full text-center">
-    <a href="#" className="group">
+    <a href="https://github.com/Pvpkishore/Github_Glazer" className="group">
       <h1 className="md:text-6xl  text-4xl font-bold mb-4 group-hover:text-blue-500 transition duration-300 ease-in-out transform group-hover:scale-105 animate-fade-in">
         GitHub Glazer
       </h1>
@@ -201,7 +201,7 @@ const App: React.FC = () => {
     <p className="text-center text-gray-400">
       Contact creator at{" "}
       <a
-        href="https://www.linkedin.com/in/ponnala-venkata-padma-kishor-76679326a/"
+        href="https://github.com/Pvpkishore"
         target="_blank"
         className="text-blue-400 hover:underline transition duration-300 ease-in-out"
         rel="noopener noreferrer"
