@@ -9,7 +9,6 @@ const App: React.FC = () => {
   const [responseReceived, setResponseReceived] = useState(false);
   const [responseSet, setResponseSet] = useState(false);
   const [glazing, setGlazing] = useState(false);
-  const [openai, setOpenai] = useState<any>(null);
 
   useEffect(() => {
     gsap.fromTo(
@@ -19,29 +18,11 @@ const App: React.FC = () => {
     );
   }, []);
 
-  useEffect(() => {
-    const loadOpenAI = async () => {
-      const OpenAI = (await import("openai")).default;
-      const openaiApiKey = import.meta.env.VITE_OPENAI_API_KEY;
-      const openaiInstance = new OpenAI({
-        apiKey: openaiApiKey,
-        dangerouslyAllowBrowser: true,
-      });
-      setOpenai(openaiInstance);
-    };
-    loadOpenAI();
-  }, []);
-
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(event.target.value);
   };
 
   const handleButtonClick = async () => {
-    if (!openai) {
-      alert("OpenAI is still loading. Please try again in a few seconds.");
-      return;
-    }
-
     if (responseSet) {
       setUsername("");
       setResponse("");
@@ -52,15 +33,16 @@ const App: React.FC = () => {
     } else {
       setGlazing(true);
       const githubApiKey = import.meta.env.VITE_GITHUB_API_KEY;
+      const openRouterApiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
+      const siteUrl = "http://localhost:5173/"; // Replace with your actual site URL
+      const siteName = "Github Glazer"; // Replace with your actual site name
 
       try {
         const headers = {
           Accept: "application/vnd.github.v3+json",
           Authorization: `token ${githubApiKey}`,
         };
-        let response = await fetch(`https://api.github.com/users/${username}`, {
-          headers,
-        });
+        let response = await fetch(`https://api.github.com/users/${username}`, { headers });
 
         if (response.status === 404) {
           setResponseSet(true);
@@ -73,7 +55,7 @@ const App: React.FC = () => {
           );
           const repoResponse = await response.json();
 
-          let readmeResponse = "";
+          let readmeResponse = " ";
           try {
             const readmeData = await axios.get(
               `https://raw.githubusercontent.com/${username}/${username}/main/README.md?raw=true`
@@ -92,34 +74,42 @@ const App: React.FC = () => {
             following: profileResponse.following,
             public_repos: profileResponse.public_repos,
             profile_readme: readmeResponse,
-            last_15_repositories: repoResponse
-              .map((repo: any) => ({
-                name: repo.name,
-                description: repo.description,
-                language: repo.language,
-                stargazers_count: repo.stargazers_count,
-                open_issues_count: repo.open_issues_count,
-                license: repo.license,
-                fork: repo.fork,
-              }))
-              .slice(0, 15),
+            last_15_repositories: repoResponse.map((repo: any) => ({
+              name: repo.name,
+              description: repo.description,
+              language: repo.language,
+              stargazers_count: repo.stargazers_count,
+              open_issues_count: repo.open_issues_count,
+              license: repo.license,
+              fork: repo.fork,
+            })).slice(0, 15),
           };
 
           const prompt = `Give a short and wholesome compliment session with a little witty sarcasm for the following GitHub profile: ${username}. Here are the details: "${JSON.stringify(datas)}"`;
 
           try {
-            const completion = await openai.chat.completions.create({
-              model: "gpt-3.5-turbo-0125",
-              messages: [
-                {
-                  role: "system",
-                  content:
-                    "You glaze people's GitHub accounts based on their bio, name, README, and repos as wholesomely and nicely as possible with a twinge of sarcasm. Keep it around 250-300 words, full of internet humour and encouragement.",
-                },
-                { role: "user", content: prompt },
-              ],
+            const completionResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${openRouterApiKey}`,
+                "HTTP-Referer": siteUrl,
+                "X-Title": siteName,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                model: "deepseek/deepseek-r1:free",
+                messages: [
+                  {
+                    role: "system",
+                    content:
+                      "You glaze people's GitHub accounts based on their bio, name, README, and repos as wholesomely and nicely as possible with a twinge of sarcasm. Keep it around 250-300 words, full of internet humor and encouragement.",
+                  },
+                  { role: "user", content: prompt },
+                ],
+              }),
             });
-            const glaze = completion.choices[0].message.content;
+            const completion = await completionResponse.json();
+            const glaze = completion.choices?.[0]?.message?.content;
             setResponse(glaze || "Our glazers are recharging, try again later :(");
             setResponseSet(true);
           } catch (error) {
@@ -148,7 +138,7 @@ const App: React.FC = () => {
     <div className="flex flex-col min-h-screen items-center p-8 bg-gradient-to-b from-gray-900 via-gray-800 to-slate-900 text-white font-poppins space-y-10">
   {/* Header Section */}
   <header className="w-full text-center">
-    <a href="https://github.com/Pvpkishore/Github_Glazer" className="group">
+    <a href="#" className="group">
       <h1 className="md:text-6xl  text-4xl font-bold mb-4 group-hover:text-blue-500 transition duration-300 ease-in-out transform group-hover:scale-105 animate-fade-in">
         GitHub Glazer
       </h1>
@@ -201,7 +191,7 @@ const App: React.FC = () => {
     <p className="text-center text-gray-400">
       Contact creator at{" "}
       <a
-        href="https://github.com/Pvpkishore"
+        href="https://www.linkedin.com/in/ponnala-venkata-padma-kishor-76679326a/"
         target="_blank"
         className="text-blue-400 hover:underline transition duration-300 ease-in-out"
         rel="noopener noreferrer"
