@@ -34,7 +34,7 @@ const App: React.FC = () => {
       setGlazing(true);
       const githubApiKey = import.meta.env.VITE_GITHUB_API_KEY;
       const openRouterApiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
-      const siteUrl = "http://localhost:5173/"; // Replace with your actual site URL
+      const siteUrl = "https://github-glazer-kishore.vercel.app/"; // Replace with your actual site URL
       const siteName = "Github Glazer"; // Replace with your actual site name
 
       try {
