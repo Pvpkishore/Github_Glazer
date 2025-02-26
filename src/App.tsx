@@ -85,7 +85,7 @@ const App: React.FC = () => {
             })).slice(0, 15),
           };
 
-          const prompt = `Give a short and wholesome compliment session with a little witty sarcasm for the following GitHub profile: ${username}. Here are the details: "${JSON.stringify(datas)}"`;
+          const prompt = `Generate a short, wholesome, and slightly witty compliment session for the GitHub profile of ${username}. Use the provided details: ${JSON.stringify(datas)}. Make it feel like a friendly roast but filled with admiration. Highlight their repositories, contributions, and README in a way that makes even their smallest projects sound legendary. Inject light sarcasm that feels playful, not mean. If their commit history is inconsistent, joke about their 'strategic coding sprints.' If they have many repos, treat them like an open-source superhero. Wrap up with a fun call-to-action, hyping them up to keep coding like a legend.`;
 
           try {
             const completionResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -102,7 +102,7 @@ const App: React.FC = () => {
                   {
                     role: "system",
                     content:
-                      "You glaze people's GitHub accounts based on their bio, name, README, and repos as wholesomely and nicely as possible with a twinge of sarcasm. Keep it around 250-300 words, full of internet humor and encouragement.",
+                      "Analyze this GitHub user's profile based on their bio, name, README, repositories, and overall contributions. Write a 250-300 word review that is overwhelmingly wholesome, packed with internet humor, and full of over-the-top praise. Use an encouraging and slightly sarcastic tone, hyping up even the smallest details. If they have only one repo, act like it's the most revolutionary thing since sliced bread. If they have many, treat them like an open-source legend. Make jokes about their commit history, coding style, or README quirks, but in a way that makes them feel appreciated and seen. End with a fun call-to-action, encouraging them to keep being awesome. Avoid negativity—this should feel like the most uplifting thing they’ll read all day.",
                   },
                   { role: "user", content: prompt },
                 ],
